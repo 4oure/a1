@@ -1,0 +1,58 @@
+body {
+    font-family: sans-serif;
+    background: #111;
+    color: #eee;
+    margin: 0;
+    padding: 24px;
+  }
+  
+  h1 { font-size: 2rem; margin-bottom: 4px; }
+  
+  p.subtitle {
+    color: #aaa;
+    margin-bottom: 32px;
+    max-width: 600px;
+    line-height: 1.6;
+  }
+  
+  .chart-section {
+    margin-bottom: 48px;
+    padding: 24px;
+    border: 1px solid #333;
+  }
+  
+  .chart-section h2 { margin-top: 0; color: #ccc; font-size: 1.1rem; }
+  .chart-section p  { color: #888; font-size: 0.85rem; max-width: 640px; line-height: 1.6; }
+  
+  .year-label { color: #aaa; font-weight: normal; font-size: 0.9rem; }
+  
+  /* axes */
+  .axis text        { fill: #aaa; font-size: 11px; }
+  .axis path,
+  .axis line        { stroke: #555; }
+  
+  /* gridlines */
+  .grid line        { stroke: #2a2a2a; stroke-dasharray: 2, 4; }
+  .grid .domain     { display: none; }
+  
+  /* brush */
+  .selection        { fill: rgba(255,255,255,0.05); stroke: #888; }
+  
+  #tooltip {
+    position: fixed;
+    background: #1a1a1a;
+    border: 1px solid #444;
+    padding: 8px 12px;
+    font-size: 12px;
+    line-height: 1.7;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s;
+    z-index: 99;
+  }
+  #tooltip.visible  { opacity: 1; }
+  
+  .writeup { max-width: 700px; margin-top: 48px; border-top: 1px solid #333; padding-top: 32px; }
+  .writeup h2 { font-size: 1rem; color: #ccc; margin-top: 24px; }
+  .writeup p  { font-size: 0.85rem; color: #888; line-height: 1.7; }
+  .writeup a  { color: #58a6ff; }

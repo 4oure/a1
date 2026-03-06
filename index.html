@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Chicago's Justice Gap</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+  <h1>Chicago's Justice Gap</h1>
+  <p class="subtitle">
+    Crime in Chicago fell nearly 50% since 2001 — but the arrest rate fell even faster.
+    Brush Chart 1 to filter Charts 2 and 3 by year range.
+  </p>
+
+  <!-- Chart 1 — Person 1 -->
+  <div class="chart-section">
+    <h2>Chart 1 — Crime Volume &amp; Arrest Rate (2001–2025)</h2>
+    <p>Bars = total crimes. Line = arrest rate %. Brush to filter the charts below.</p>
+    <div id="chart1"></div>
+  </div>
+
+  <!-- Chart 2 — Person 2 -->
+  <div class="chart-section">
+    <h2>Chart 2 — Crime Type Breakdown <span id="chart2-label" class="year-label">(All Years)</span></h2>
+    <p>Total crimes vs. arrests per crime type. Updates when you brush Chart 1.</p>
+    <div id="chart2"></div>
+  </div>
+
+  <!-- Chart 3 — Person 3 -->
+  <div class="chart-section">
+    <h2>Chart 3 — Arrest Rate by Crime Type <span id="chart3-label" class="year-label">(All Years)</span></h2>
+    <p>Which crimes lead to arrests? The most common crimes are the least likely to be solved.</p>
+    <div id="chart3"></div>
+  </div>
+
+  <!-- Write-up -->
+  <div class="writeup">
+    <h2>About the Dataset</h2>
+    <p>
+      This visualization uses the Chicago Crimes dataset (2001–present) from the
+      <a href="https://data.cityofchicago.org/Public-Safety/Crimes-2001-to-Present/ijzp-q8t2" target="_blank">Chicago Data Portal</a>,
+      extracted from the Chicago Police Department's CLEAR system.
+      The raw dataset contains over 8.5 million rows. We pre-aggregated it to yearly
+      counts by crime type for browser performance.
+    </p>
+
+    <h2>Design Rationale</h2>
+    <p>
+      <!-- TODO: explain encoding choices and why -->
+      [Your explanation here]
+    </p>
+
+    <h2>Implemented Interactions</h2>
+    <p>
+      <strong>Category I — Brushing &amp; Linking:</strong> [description]<br>
+      <strong>Category II — Tooltips:</strong> [description]<br>
+      <strong>Category II — Annotations:</strong> [description]
+    </p>
+
+    <h2>Development Process</h2>
+    <p><!-- TODO: who did what, how long, what was hardest -->[Your process here]</p>
+
+    <h2>AI Usage</h2>
+    <p></p>
+
+    <h2>Data Source</h2>
+    <p>
+      Chicago Data Portal — Crimes, 2001 to Present.
+      <a href="https://data.cityofchicago.org/Public-Safety/Crimes-2001-to-Present/ijzp-q8t2" target="_blank">data.cityofchicago.org</a>
+    </p>
+  </div>
+
+  <div id="tooltip"></div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
