@@ -98,10 +98,207 @@ function aggregateByType(data) {
 
 function drawChart1() {
   document.getElementById('chart1').innerHTML = '';
-  // TODO PERSON 1: implement here using yearlyData
-  document.getElementById('chart1').innerHTML =
-    '<p style="color:#555;font-style:italic;padding:8px">Chart 1 not yet implemented.</p>';
+
+  const margin = { top: 50, right: 80, bottom: 70, left: 80 };
+  const width = 860 - margin.left - margin.right;
+  const height = 380 - margin.top - margin.bottom;
+
+  const svg = d3.select('#chart1')
+    .append('svg')
+    .attr('width', width + margin.left + margin.right)
+    .attr('height', height + margin.top + margin.bottom);
+
+  const g = svg.append('g')
+    .attr('transform', `translate(${margin.left},${margin.top})`);
+
+  // Scales
+  const xScale = d3.scaleBand()
+    .domain(yearlyData.map(d => d.Year))
+    .range([0, width])
+    .padding(0.2);
+
+  const yLeft = d3.scaleLinear()
+    .domain([0, d3.max(yearlyData, d => d.total)])
+    .nice()
+    .range([height, 0]);
+
+  const yRight = d3.scaleLinear()
+    .domain([0, 35])
+    .range([height, 0]);
+
+  // Gridlines
+  g.append('g')
+    .attr('class', 'grid')
+    .call(
+      d3.axisLeft(yLeft)
+        .tickSize(-width)
+        .tickFormat('')
+    );
+
+  // Bars: total crimes
+  g.selectAll('.bar')
+    .data(yearlyData)
+    .enter()
+    .append('rect')
+    .attr('class', 'bar')
+    .attr('x', d => xScale(d.Year))
+    .attr('y', d => yLeft(d.total))
+    .attr('width', xScale.bandwidth())
+    .attr('height', d => height - yLeft(d.total))
+    .attr('fill', '#555')
+    .on('mousemove', function(event, d) {
+      showTooltip(
+        event,
+        `<strong>${d.Year}</strong><br/>
+         Total crimes: ${d.total.toLocaleString()}<br/>
+         Arrests: ${d.arrests.toLocaleString()}<br/>
+         Arrest rate: ${d.arrest_rate}%`
+      );
+    })
+    .on('mouseleave', hideTooltip);
+
+  // Line generator for arrest rate
+  const line = d3.line()
+    .x(d => xScale(d.Year) + xScale.bandwidth() / 2)
+    .y(d => yRight(d.arrest_rate));
+
+  // Arrest rate line
+  g.append('path')
+    .datum(yearlyData)
+    .attr('fill', 'none')
+    .attr('stroke', '#e05c5c')
+    .attr('stroke-width', 3)
+    .attr('d', line);
+
+  // Dots
+  g.selectAll('.dot')
+    .data(yearlyData)
+    .enter()
+    .append('circle')
+    .attr('class', 'dot')
+    .attr('cx', d => xScale(d.Year) + xScale.bandwidth() / 2)
+    .attr('cy', d => yRight(d.arrest_rate))
+    .attr('r', 4)
+    .attr('fill', '#e05c5c')
+    .on('mousemove', function(event, d) {
+      showTooltip(
+        event,
+        `<strong>${d.Year}</strong><br/>
+         Total crimes: ${d.total.toLocaleString()}<br/>
+         Arrests: ${d.arrests.toLocaleString()}<br/>
+         Arrest rate: ${d.arrest_rate}%`
+      );
+    })
+    .on('mouseleave', hideTooltip);
+
+  // Axes
+  const xAxis = d3.axisBottom(xScale)
+    .tickValues(yearlyData
+      .filter((d, i) => i % 2 === 0)
+      .map(d => d.Year));
+
+  g.append('g')
+    .attr('class', 'axis')
+    .attr('transform', `translate(0,${height})`)
+    .call(xAxis)
+    .selectAll('text')
+    .attr('transform', 'rotate(-40)')
+    .style('text-anchor', 'end');
+
+  g.append('g')
+    .attr('class', 'axis')
+    .call(d3.axisLeft(yLeft).ticks(6).tickFormat(d3.format('.2s')));
+
+  g.append('g')
+    .attr('class', 'axis')
+    .attr('transform', `translate(${width},0)`)
+    .call(d3.axisRight(yRight).ticks(7).tickFormat(d => `${d}%`));
+
+  // Axis labels
+  g.append('text')
+    .attr('x', width / 2)
+    .attr('y', height + 60)
+    .attr('fill', '#aaa')
+    .attr('text-anchor', 'middle')
+    .text('Year');
+
+  g.append('text')
+    .attr('transform', 'rotate(-90)')
+    .attr('x', -height / 2)
+    .attr('y', -55)
+    .attr('fill', '#aaa')
+    .attr('text-anchor', 'middle')
+    .text('Total Crimes');
+
+  g.append('text')
+    .attr('transform', 'rotate(-90)')
+    .attr('x', -height / 2)
+    .attr('y', width + 55)
+    .attr('fill', '#aaa')
+    .attr('text-anchor', 'middle')
+    .text('Arrest Rate %');
+
+  // Annotation helper
+  function addAnnotation(year, label, color) {
+    const x = xScale(year) + xScale.bandwidth() / 2;
+
+    g.append('line')
+      .attr('x1', x)
+      .attr('x2', x)
+      .attr('y1', 0)
+      .attr('y2', height)
+      .attr('stroke', color)
+      .attr('stroke-width', 2)
+      .attr('stroke-dasharray', '6,4');
+
+    g.append('text')
+      .attr('x', x)
+      .attr('y', -12)
+      .attr('fill', color)
+      .attr('font-size', 12)
+      .attr('font-weight', 'bold')
+      .attr('text-anchor', 'middle')
+      .text(label);
+  }
+
+  addAnnotation(2016, 'Laquan McDonald Effect', '#ffd23f');
+  addAnnotation(2020, 'COVID + BLM', '#58a6ff');
+
+  // Brush
+  const brush = d3.brushX()
+    .extent([[0, 0], [width, height]])
+    .on('end', brushed);
+
+  g.append('g')
+    .attr('class', 'brush')
+    .call(brush);
+
+  function brushed(event) {
+    if (!event.selection) {
+      onBrush(null);
+      return;
+    }
+
+    const [x0, x1] = event.selection;
+
+    const selectedYears = yearlyData
+      .filter(d => {
+        const center = xScale(d.Year) + xScale.bandwidth() / 2;
+        return center >= x0 && center <= x1;
+      })
+      .map(d => d.Year);
+
+    if (selectedYears.length === 0) {
+      onBrush(null);
+      return;
+    }
+
+    const y0 = d3.min(selectedYears);
+    const y1 = d3.max(selectedYears);
+    onBrush(y0, y1);
+  }
 }
+
 
 
 // ════════════════════════════════════════════════════════════════
