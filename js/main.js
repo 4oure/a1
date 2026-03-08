@@ -1,9 +1,9 @@
 // ── shared state ────────────────────────────────────────────────
 const CSV_PATH = 'data/crimes_aggregated.csv';
 
-let rawData      = [];
+let rawData = [];
 let filteredData = [];
-let yearlyData   = [];
+let yearlyData = [];
 
 const TOP_TYPES = [
   'THEFT', 'BATTERY', 'CRIMINAL DAMAGE', 'NARCOTICS',
@@ -20,8 +20,8 @@ function buildYearlyData(data) {
   );
   return Array.from(byYear, ([Year, v]) => ({
     Year,
-    total:       v.total,
-    arrests:     v.arrests,
+    total: v.total,
+    arrests: v.arrests,
     arrest_rate: +(v.arrests / v.total * 100).toFixed(1)
   })).sort((a, b) => a.Year - b.Year);
 }
@@ -49,7 +49,7 @@ function showTooltip(event, html) {
   tt.innerHTML = html;
   tt.classList.add('visible');
   tt.style.left = (event.clientX + 14) + 'px';
-  tt.style.top  = (event.clientY - 10) + 'px';
+  tt.style.top = (event.clientY - 10) + 'px';
 }
 function hideTooltip() {
   document.getElementById('tooltip').classList.remove('visible');
@@ -64,8 +64,8 @@ function aggregateByType(data) {
   );
   return Array.from(byType, ([type, v]) => ({
     type,
-    total:       v.total,
-    arrests:     v.arrests,
+    total: v.total,
+    arrests: v.arrests,
     arrest_rate: +(v.arrests / v.total * 100).toFixed(1)
   })).filter(d => TOP_TYPES.includes(d.type));
 }
@@ -146,7 +146,7 @@ function drawChart1() {
     .attr('width', xScale.bandwidth())
     .attr('height', d => height - yLeft(d.total))
     .attr('fill', '#555')
-    .on('mousemove', function(event, d) {
+    .on('mousemove', function (event, d) {
       showTooltip(
         event,
         `<strong>${d.Year}</strong><br/>
@@ -180,7 +180,7 @@ function drawChart1() {
     .attr('cy', d => yRight(d.arrest_rate))
     .attr('r', 4)
     .attr('fill', '#e05c5c')
-    .on('mousemove', function(event, d) {
+    .on('mousemove', function (event, d) {
       showTooltip(
         event,
         `<strong>${d.Year}</strong><br/>
@@ -321,10 +321,98 @@ function drawChart1() {
 
 function drawChart2() {
   document.getElementById('chart2').innerHTML = '';
-  // TODO PERSON 2: implement here using filteredData
-  document.getElementById('chart2').innerHTML =
-    '<p style="color:#555;font-style:italic;padding:8px">Chart 2 not yet implemented.</p>';
+
+  const typeData = aggregateByType(filteredData).sort((a, b) => b.total - a.total);
+  const margin = { top: 20, right: 20, bottom: 40, left: 160 };
+  const width = 860 - margin.left - margin.right;
+  const height = 360 - margin.top - margin.bottom;
+
+  const svg = d3.select('#chart2')
+    .append('svg')
+    .attr('width', width + margin.left + margin.right)
+    .attr('height', height + margin.top + margin.bottom);
+
+
+  const g = svg.append('g')
+    .attr('transform', `translate(${margin.left},${margin.top})`);
+  // scales
+  const yScale = d3.scaleBand()
+    .domain(typeData.map(d => d.type))
+    .range([0, height])
+    .padding(0.3);
+
+  const xScale = d3.scaleLinear()
+    .domain([0, d3.max(typeData, d => d.total)])
+    .nice()
+    .range([0, width]);
+
+  // total Bars
+  g.selectAll('.bar-total')
+    .data(typeData)
+    .enter()
+    .append('rect')
+    .attr('class', 'bar-total')
+    .attr('y', d => yScale(d.type))
+    .attr('x', 0)
+    .attr('height', yScale.bandwidth())
+    .attr('width', d => xScale(d.total))
+    .attr('fill', '#555')
+    .on('mousemove', (event, d) => {
+      showTooltip(event,
+        `<strong>${d.type}</strong><br/>
+       Total crimes: ${d.total.toLocaleString()}<br/>
+       Arrests: ${d.arrests.toLocaleString()}<br/>
+       Arrest rate: ${d.arrest_rate}%`
+      );
+    })
+    .on('mouseleave', hideTooltip);
+
+  g.selectAll('.bar-arrests')
+    .data(typeData)
+    .enter()
+    .append('rect')
+    .attr('class', 'bar-arrests')
+    .attr('y', d => yScale(d.type))
+    .attr('x', 0)
+    .attr('height', yScale.bandwidth())
+    .attr('width', d => xScale(d.arrests))
+    .attr('fill', '#4a90d9')
+    .on('mousemove', (event, d) => {
+      showTooltip(event,
+        `<strong>${d.type}</strong><br/>
+         Total crimes: ${d.total.toLocaleString()}<br/>
+         Arrests: ${d.arrests.toLocaleString()}<br/>
+         Arrest rate: ${d.arrest_rate}%`
+      );
+    })
+    .on('mouseleave', hideTooltip);
+
+  g.append('g')
+    .attr('class', 'axis')
+    .call(d3.axisLeft(yScale).tickSize(0))
+    .select('.domain').remove();
+
+  g.append('g')
+    .attr('class', 'axis')
+    .attr('transform', `translate(0,${height})`)
+    .call(d3.axisBottom(xScale).ticks(5).tickFormat(d3.format('.2s')));
+
+  const legend = svg.append('g')
+    .attr('transform', `translate(${margin.left}, ${height + margin.top + 30})`);
+
+  [['#555', 'Total Crimes'], ['#4a90d9', 'Arrests Made']].forEach(([color, label], i) => {
+    legend.append('rect')
+      .attr('x', i * 140).attr('y', 0)
+      .attr('width', 12).attr('height', 12)
+      .attr('fill', color);
+    legend.append('text')
+      .attr('x', i * 140 + 16).attr('y', 11)
+      .attr('fill', '#aaa').attr('font-size', 12)
+      .text(label);
+  });
 }
+
+
 
 
 // ════════════════════════════════════════════════════════════════
@@ -358,15 +446,15 @@ function drawChart3() {
 // ── load data ────────────────────────────────────────────────────
 window.addEventListener('load', () => {
   d3.csv(CSV_PATH, d => ({
-    Year:           +d.Year,
-    'Primary Type':  d['Primary Type'],
-    total:          +d.total,
-    arrests:        +d.arrests,
-    arrest_rate:    +d.arrest_rate
+    Year: +d.Year,
+    'Primary Type': d['Primary Type'],
+    total: +d.total,
+    arrests: +d.arrests,
+    arrest_rate: +d.arrest_rate
   })).then(data => {
-    rawData      = data;
+    rawData = data;
     filteredData = data;
-    yearlyData   = buildYearlyData(data);
+    yearlyData = buildYearlyData(data);
     drawChart1();
     drawChart2();
     drawChart3();
