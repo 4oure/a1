@@ -323,15 +323,14 @@ function drawChart2() {
   document.getElementById('chart2').innerHTML = '';
 
   const typeData = aggregateByType(filteredData).sort((a, b) => b.total - a.total);
-  const margin = { top: 20, right: 20, bottom: 40, left: 160 };
+  const margin = { top: 20, right: 20, bottom: 60, left: 160 };
   const width = 860 - margin.left - margin.right;
   const height = 360 - margin.top - margin.bottom;
 
   const svg = d3.select('#chart2')
-    .append('svg')
-    .attr('width', width + margin.left + margin.right)
-    .attr('height', height + margin.top + margin.bottom);
-
+  .append('svg')
+  .attr('width', width + margin.left + margin.right)
+  .attr('height', height + margin.top + margin.bottom + 40);
 
   const g = svg.append('g')
     .attr('transform', `translate(${margin.left},${margin.top})`);

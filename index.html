@@ -14,25 +14,66 @@
     Brush Chart 1 to filter Charts 2 and 3 by year range.
   </p>
 
-  <!-- Chart 1 — Person 1 -->
+  <!-- Chart 1 -->
   <div class="chart-section">
     <h2>Chart 1 — Crime Volume &amp; Arrest Rate (2001–2025)</h2>
     <p>Bars = total crimes. Line = arrest rate %. Brush to filter the charts below.</p>
     <div id="chart1"></div>
   </div>
 
-  <!-- Chart 2 — Person 2 -->
+  <div class="chart-explainer">
+    <p>
+      The gray bars show how total reported crime has declined steadily over the past two decades and how it has been
+      nearly cut in half since 2001. But the red line tells a more troubling story, which is that the percentage
+      of crimes that actually result in an arrest has fallen even faster. Two moments stand out.
+      In 2016, following the release of the Laquan McDonald shooting video, arrest rates dropped
+      sharply as public scrutiny of the Chicago Police Department intensified. Then in 2020, the
+      combined effect of COVID-19 and the George Floyd/BLM protests pushed the arrest rate to an
+      all-time low. <strong>A lower crime rate doesn't always mean more accountability, it just means fewer crimes
+      and fewer arrests.</strong> Use the brush to select a specific time period and see how the
+      breakdown changes in the charts below.
+    </p>
+  </div>
+
+  <!-- Chart 2 -->
   <div class="chart-section">
     <h2>Chart 2 — Crime Type Breakdown <span id="chart2-label" class="year-label">(All Years)</span></h2>
     <p>Total crimes vs. arrests per crime type. Updates when you brush Chart 1.</p>
     <div id="chart2"></div>
   </div>
 
-  <!-- Chart 3 — Person 3 -->
+  <div class="chart-explainer">
+    <p>
+      This chart breaks down the justice gap by crime type. The gray bar shows how many incidents
+      were reported; the blue bar shows how many led to an arrest. For crimes like Narcotics, the
+      bars are nearly equal because police largely only record a narcotics incident when they make an
+      arrest. But for the highest-volume crimes such as Theft, Battery, and Criminal Damage, the blue bar
+      barely registers against the gray. Because these crimes are more likely to be reported by other civilians and not by cops upon arrest.
+       <strong>The crimes most likely to affect everyday
+      Chicagoans are also the ones least likely to be solved.</strong> Try brushing different
+      time periods in Chart 1 to see whether this gap has grown or shrunk over the years.
+    </p>
+  </div>
+
+  <!-- Chart 3 -->
   <div class="chart-section">
     <h2>Chart 3 — Arrest Rate by Crime Type <span id="chart3-label" class="year-label">(All Years)</span></h2>
     <p>Which crimes lead to arrests? The most common crimes are the least likely to be solved.</p>
     <div id="chart3"></div>
+  </div>
+
+  <div class="chart-explainer">
+    <p>
+      When sorting by arrest rate, the issue is made clear. Narcotics, Gambling, and Prostitution
+      sit near 100%, but this is largely because these crimes are only recorded when police
+      are already making an arrest. Meanwhile, Burglary sits at under 6%, Motor Vehicle Theft
+      under 8%, and Theft, the single most common crime in Chicago with over 1.8 million
+      incidents, leads to an arrest less than 11% of the time. Meaning if something is stolen from you
+      and you report it, there is barely over a 10% chance that the thief will be caught and an even lower percentage that he or she will
+      be convicted. The dashed line marks the
+      citywide average. <strong>Most of the crimes that define daily life in Chicago fall well
+      below that average.</strong>
+    </p>
   </div>
 
   <!-- Write-up -->
@@ -48,22 +89,44 @@
 
     <h2>Design Rationale</h2>
     <p>
-      <!-- TODO: explain encoding choices and why -->
-      [Your explanation here]
+      A dual-axis bar and line chart for chart 1 was chosen because we needed to show two different quantities, both total crime volume
+      and arrest rate percentage, on the same timeline without one obscuring the other. The coloring on the bars is intentionally a muted color
+      so that the red arrest rate line remains the primary focus of a reader's attention.
+</p>
+<p>
+      Chart 2 uses overlapping horizontal bars rather than grouped vertical bars because
+  the crime type labels can be pretty long and read more naturally on the y-axis. Layering arrests
+  on top of total crimes in a contrasting color makes the gap between the two
+  immediately visible without requiring the user to do mental math. Seeing the sharp disparity between two colors is likely to bring about a 
+  notice in the disparity.
+    </p>
+    <p>
+        Chart 3 uses a color scale mapped to arrest rate percentage so that low-accountability crimes read as visually alarming.
+        It is sorted by arrest rate so the most and least accountable crimes are on opposite ends of the graph. An average line is provided
+        for the users as a reference point.
     </p>
 
     <h2>Implemented Interactions</h2>
     <p>
-      <strong>Category I — Brushing &amp; Linking:</strong> [description]<br>
-      <strong>Category II — Tooltips:</strong> [description]<br>
-      <strong>Category II — Annotations:</strong> [description]
+      <strong>Category I — Brushing &amp; Linking:</strong> Chart 1 includes a D3 brushX interaction. When a user
+       selects a year range, both chart 2 and 3 automatically recompute and draw only using data from
+       the selected years. <br>
+      <strong>Category II — Tooltips: all 3 charts include mouseover tooltips where hovering over a bar or other part of the graph
+        reveals exact details for that data point. This is done to improve readability and clarity without filling the chart with a bunch of clutter and labels.
+      </strong> <br>
+      <strong>Category II — Annotations:</strong> Chart 1 and 3 include permanent annotations to draw attention to specific information that can help contextualize each graph.
     </p>
 
     <h2>Development Process</h2>
-    <p><!-- TODO: who did what, how long, what was hardest -->[Your process here]</p>
+    <p>Colin completed the first chart. Gavin pushed the first initial commit of an outline to Github and did the second chart. James did the third chart.
+        The most difficult and time-consuming process was choosing what story to tell and how certain aspects were to be highlighted in the clearest way for a reader.
+
+        
+
+    </p>
 
     <h2>AI Usage</h2>
-    <p></p>
+    <p> AI was used partially in brainstorming and was used to help with CSS styling and initial organization of the project. ALl of the charts were completed by the group members individually.</p>
 
     <h2>Data Source</h2>
     <p>

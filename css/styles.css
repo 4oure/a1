@@ -56,3 +56,14 @@ body {
   .writeup h2 { font-size: 1rem; color: #ccc; margin-top: 24px; }
   .writeup p  { font-size: 0.85rem; color: #888; line-height: 1.7; }
   .writeup a  { color: #58a6ff; }
+
+
+  .chart-explainer p {
+    font-size: 0.85rem;
+    color: #888;
+    line-height: 1.8;
+    margin: 0;
+  }
+  .chart-explainer strong {
+    color: #ccc;
+  }
