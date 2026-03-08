@@ -437,9 +437,114 @@ function drawChart2() {
 
 function drawChart3() {
   document.getElementById('chart3').innerHTML = '';
-  // TODO PERSON 3: implement here using filteredData
-  document.getElementById('chart3').innerHTML =
-    '<p style="color:#555;font-style:italic;padding:8px">Chart 3 not yet implemented.</p>';
+
+  let data = aggregateByType(filteredData)
+    .sort((a, b) => b.arrest_rate - a.arrest_rate);
+
+  const margin = { top: 45, right: 40, bottom: 60, left: 190 };
+  const width = 860 - margin.left - margin.right;
+  const height = 420 - margin.top - margin.bottom;
+
+  const svg = d3.select('#chart3')
+    .append('svg')
+    .attr('width', width + margin.left + margin.right)
+    .attr('height', height + margin.top + margin.bottom);
+
+  const g = svg.append('g')
+    .attr('transform', `translate(${margin.left},${margin.top})`);
+
+  const xScale = d3.scaleLinear()
+    .domain([0, 100])
+    .range([0, width]);
+
+  const yScale = d3.scaleBand()
+    .domain(data.map(d => d.type))
+    .range([0, height])
+    .padding(0.3);
+
+  // Gridlines
+  g.append('g')
+    .attr('class', 'grid')
+    .attr('transform', `translate(0,${height})`)
+    .call(
+      d3.axisBottom(xScale)
+        .tickSize(-height)
+        .tickFormat('')
+    );
+
+  // Average arrest rate across currently filtered crime types
+  const avg = d3.mean(data, d => d.arrest_rate);
+
+  // Bars
+  g.selectAll('.rate-bar')
+    .data(data)
+    .enter()
+    .append('rect')
+    .attr('class', 'rate-bar')
+    .attr('x', 0)
+    .attr('y', d => yScale(d.type))
+    .attr('width', d => xScale(d.arrest_rate))
+    .attr('height', yScale.bandwidth())
+    .attr('fill', d => d3.interpolateRdYlBu(d.arrest_rate / 100))
+    .on('mousemove', function(event, d) {
+      showTooltip(
+        event,
+        `<strong>${d.type}</strong><br/>
+         Arrest rate: ${d.arrest_rate}%<br/>
+         Total crimes: ${d.total.toLocaleString()}<br/>
+         Arrests: ${d.arrests.toLocaleString()}`
+      );
+    })
+    .on('mouseleave', hideTooltip);
+
+  // Value labels at end of bars
+  g.selectAll('.rate-label')
+    .data(data)
+    .enter()
+    .append('text')
+    .attr('class', 'rate-label')
+    .attr('x', d => xScale(d.arrest_rate) + 6)
+    .attr('y', d => yScale(d.type) + yScale.bandwidth() / 2 + 4)
+    .attr('fill', '#bbb')
+    .attr('font-size', 11)
+    .text(d => `${d.arrest_rate}%`);
+
+  // City average reference line
+  g.append('line')
+    .attr('x1', xScale(avg))
+    .attr('x2', xScale(avg))
+    .attr('y1', 0)
+    .attr('y2', height)
+    .attr('stroke', '#aaa')
+    .attr('stroke-width', 2)
+    .attr('stroke-dasharray', '6,4');
+
+  g.append('text')
+    .attr('x', xScale(avg))
+    .attr('y', -12)
+    .attr('text-anchor', 'middle')
+    .attr('fill', '#aaa')
+    .attr('font-size', 12)
+    .attr('font-weight', 'bold')
+    .text('City Average');
+
+  // Axes
+  g.append('g')
+    .attr('class', 'axis')
+    .call(d3.axisLeft(yScale));
+
+  g.append('g')
+    .attr('class', 'axis')
+    .attr('transform', `translate(0,${height})`)
+    .call(d3.axisBottom(xScale).ticks(10).tickFormat(d => `${d}%`));
+
+  // X-axis label
+  g.append('text')
+    .attr('x', width / 2)
+    .attr('y', height + 45)
+    .attr('text-anchor', 'middle')
+    .attr('fill', '#aaa')
+    .text('Arrest Rate %');
 }
 
 
